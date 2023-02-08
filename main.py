@@ -28,7 +28,21 @@ df_groupttb.drop(df_groupttb[df_groupttb['Tên trang thiết bị'] == '»'].ind
 df_groupttb = df_groupttb[df_groupttb['Mã trang thiết bị'].notnull()]
 # delete row if value is null
 
-# df_groupttb['Thời gian dự kiến'] = df_groupttb['Thời gian dự kiến'].str.slice(stop=10)
-# slice the string in datetime by keep determine character number
+df_groupttb['Thời gian dự kiến'] = pd.to_datetime(df_groupttb['Thời gian dự kiến'], errors='coerce',dayfirst=True)
+df_groupttb['Thời gian dự kiến'] = df_groupttb['Thời gian dự kiến'].dt.strftime('%Y-%m-%d')
+# convert datetime column
+# first: convert to datetime format (keep non-datetime format cell),
+# second: convert to strings,
 
 df_groupttb.to_excel('dataframe.xlsx', index=False)
+# Save to a excel
+ws = xl.Book(file_template_path).sheets.active
+ws.range(8,1).api.EntireRow.Insert()
+# insert a new row with keeping format of previous row
+
+def insert_new_row(brow,sheet,value1,value2):
+    sheet.range(brow,1).api.EntireRow.Insert()
+    sheet.range(brow+1,2).value = value1
+    sheet.range(brow+1,3).value = value2
+
+
