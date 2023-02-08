@@ -25,6 +25,9 @@ df_groupttb['Mã trang thiết bị'], df_groupttb['Tên trang thiết bị'] = 
 df_groupttb.drop(df_groupttb[df_groupttb['Tên trang thiết bị'] == '»'].index, inplace = True)
 # delete row if value in column include >>
 
+df_copy = df_groupttb.copy()
+# create a copy of pandas dataframe
+
 df_groupttb = df_groupttb[df_groupttb['Mã trang thiết bị'].notnull()]
 # delete row if value is null
 
@@ -34,11 +37,17 @@ df_groupttb['Thời gian dự kiến'] = df_groupttb['Thời gian dự kiến'].
 # first: convert to datetime format (keep non-datetime format cell),
 # second: convert to strings,
 
+df_copy.drop_duplicates(subset='Thời gian dự kiến', keep='first', inplace=True)
+df_copy['Thời gian dự kiến'] = pd.to_datetime(df_copy['Thời gian dự kiến'], errors='coerce',dayfirst=True)
+df_copy['Thời gian dự kiến'] = df_copy['Thời gian dự kiến'].dt.strftime('%Y-%m-%d')
+df_copy = df_copy[df_copy['Thời gian dự kiến'].notnull()]
+
 set_datetime = set(df_groupttb['Thời gian dự kiến'].unique())
 list_datetime = list(set_datetime)
 print(list_datetime)
 
 df_groupttb.to_excel('dataframe.xlsx', index=False)
+df_copy.to_excel('dataframe_copy.xlsx', index=False)
 # Save to a excel
 ws = xl.Book(file_template_path).sheets.active
 def insert_new_row(brow,sheet,value1,value2):
@@ -48,11 +57,11 @@ def insert_new_row(brow,sheet,value1,value2):
     sheet.range(brow,3).value = value2
     sheet.range(brow,1).autofit()
     # autofit row based on content
-xxx = 8
-df_copy = df_groupttb[df_groupttb['Thời gian dự kiến'] == list_datetime[0]]
-for check in df_copy['Mã trang thiết bị']:
-    insert_new_row(xxx,ws,check,'yyy')
-    xxx = xxx + 1
+# xxx = 8
+# df_copy = df_groupttb[df_groupttb['Thời gian dự kiến'] == list_datetime[0]]
+# for check in df_copy['Mã trang thiết bị']:
+#     insert_new_row(xxx,ws,check,'yyy')
+#     xxx = xxx + 1
 
 
 
