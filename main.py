@@ -68,14 +68,26 @@ def insert_new_row(brow,sheet,value1,value2):
 template_wb = openpyxl.load_workbook(file_template_path)
 originalsheet = template_wb['Original Sheet']
 
+
+
 for i in df_copy['Thời gian dự kiến']:
     result1 = df_copy.loc[df_copy['Thời gian dự kiến'] == i, 'Tên trang thiết bị'].iloc[0]
     result2 = df_copy.loc[df_copy['Thời gian dự kiến'] == i, 'Mã trang thiết bị new'].iloc[0]
     # return the value of first column based on determine value from other column
 
-    duplicatesheet = template_wb.copy_worksheet(originalsheet)
-    duplicatesheet.title = i
-    template_wb.active = template_wb[i]
+    duplicate_ws = template_wb.copy_worksheet(originalsheet)
+    duplicate_ws.title = i
+    duplicate_ws = template_wb.active
+    # duplicate sheet and give a name
+    row_index = 0
+    # col_index = 0
+    # print(len(duplicate_ws.iter_rows(values_only=True)))
+    for row in duplicate_ws.iter_rows(values_only=True):
+        # print(row)
+        for col_index in range(len(row)):
+            if "Họ tên:…" in str(row[col_index]):
+                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Họ tên: xxx")
+        row_index = row_index +1
 template_wb.save('fileprint.xlsx')
 
 
