@@ -20,6 +20,9 @@ df_groupttb.fillna(method='ffill', inplace=True)
 df_groupttb[['Mã trang thiết bị','Tên trang thiết bị']] = df_groupttb['Hệ thống/Trang thiết bị'].str.split(":",expand=True)
 # seperate 1 column "text-to-column" 2 column
 
+df_groupttb[['name1','name2']] = df_groupttb['Người thực hiện'].str.split(",",expand=True)
+# seperate 1 column "text-to-column" 2 column
+
 df_groupttb['Mã trang thiết bị'], df_groupttb['Tên trang thiết bị'] = df_groupttb['Tên trang thiết bị'],df_groupttb['Mã trang thiết bị']
 # swap the column 'Tên trang thiết bị' to position before 'Mã trang thiết bị'
 
@@ -50,35 +53,42 @@ df_copy = df_copy.merge(df_vlookup,on='Tên trang thiết bị', how='left')
 
 set_datetime = set(df_groupttb['Thời gian dự kiến'].unique())
 list_datetime = list(set_datetime)
-print(list_datetime)
+# print(list_datetime)
 
 df_groupttb.to_excel('dataframe.xlsx', index=False)
 df_copy.to_excel('dataframe_copy.xlsx', index=False)
 # Save to a excel
 def insert_new_row(brow,sheet,value1,value2):
-    sheet.range(brow,1).api.EntireRow.Insert()
+    # sheet.range(brow,1).api.EntireRow.Insert()
     # insert a new row with keeping format of previous row
 
-    sheet.range(brow,2).value = value1
-    sheet.range(brow,3).value = value2
+    sheet.cell(row=brow,column=2).value = value1
+    sheet.cell(row=brow,column=3).value = value2
 
-    sheet.range(brow,1).autofit()
+    sheet.row_dimensions[brow].height = None
+    # sheet.sheet_format.autofit_row_height()
+
+    # sheet.range(brow,1).autofit()
     # autofit row based on content
 
 template_wb = openpyxl.load_workbook(file_template_path)
 originalsheet = template_wb['Original Sheet']
 
-
-
 for i in df_copy['Thời gian dự kiến']:
     result1 = df_copy.loc[df_copy['Thời gian dự kiến'] == i, 'Tên trang thiết bị'].iloc[0]
     result2 = df_copy.loc[df_copy['Thời gian dự kiến'] == i, 'Mã trang thiết bị new'].iloc[0]
+    result3 = df_copy.loc[df_copy['Thời gian dự kiến'] == i, 'name1'].iloc[0]
     # return the value of first column based on determine value from other column
 
+    print(i)
     duplicate_ws = template_wb.copy_worksheet(originalsheet)
     duplicate_ws.title = i
-    duplicate_ws = template_wb.active
     # duplicate sheet and give a name
+
+    template_wb.active = duplicate_ws
+    # active the sheet
+
+    insert_new_row(8,duplicate_ws,result1,result2)
     row_index = 0
     # col_index = 0
     # print(len(duplicate_ws.iter_rows(values_only=True)))
@@ -86,7 +96,7 @@ for i in df_copy['Thời gian dự kiến']:
         # print(row)
         for col_index in range(len(row)):
             if "Họ tên:…" in str(row[col_index]):
-                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Họ tên: xxx")
+                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Họ tên: "+str(result3))
         row_index = row_index +1
 template_wb.save('fileprint.xlsx')
 
