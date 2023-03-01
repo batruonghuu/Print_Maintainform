@@ -4,7 +4,7 @@ import tkinter.filedialog
 import xlrd
 import openpyxl
 import pandas as pd
-# import numpy
+import numpy
 
 file_template_path = tkinter.filedialog.askopenfilename(title="Mở file template phiếu bảo dưỡng mẫu")
 file_groupttb_path = tkinter.filedialog.askopenfilename(title="Mở file group TTB")
@@ -112,13 +112,22 @@ for i in set(df_copy['Thời gian dự kiến']):
                         duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Họ tên: "+str(result3[0]))
                     if "T1,T2" in str(row[col_index]):
                         if 'T2' in j:
-                            duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM LÀM THỦ TỤC HÀNH KHÁCH T2")
+                            if "LÀM THỦ TỤC HÀNH KHÁCH" in str(row[col_index]):
+                                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM LÀM THỦ TỤC HÀNH KHÁCH T2")
+                            if "FIDS" in str(row[col_index]):
+                                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM VÀ MÀN HÌNH FIDS T2")
                         else:
-                            duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM LÀM THỦ TỤC HÀNH KHÁCH T1")
+                            if "LÀM THỦ TỤC HÀNH KHÁCH" in str(row[col_index]):
+                                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM LÀM THỦ TỤC HÀNH KHÁCH T1")
+                            if "FIDS" in str(row[col_index]):
+                                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM VÀ MÀN HÌNH FIDS T1")
                     if 'Ngày thực hiện' in str(row[col_index]):
                         duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày thực hiện: "+str(i))
                     if 'Ngày kiểm tra' in str(row[col_index]):
                         duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày kiểm tra: "+str(i))
+                    if 'T1 - CẢNG HÀNG KHÔNG QUỐC TẾ NỘI BÀI' in str(row[col_index]):
+                        if 'T2' in j:
+                            duplicate_ws.cell(row=row_index+1, column=col_index+1, value="NHÀ GA HÀNH KHÁCH T2 - CẢNG HÀNG KHÔNG QUỐC TẾ NỘI BÀI")
 
                 row_index = row_index +1
 

@@ -11,4 +11,6 @@ wb = excel.Workbooks.Open(file_template_path)
 exclude_sheet = 'Original Sheet'
 
 for sheet in wb.Sheets:
-      sheet.PrintOut()
+      if sheet.Name!= exclude_sheet:
+            print(sheet.Name)
+            sheet.PrintOut()
