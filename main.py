@@ -49,8 +49,17 @@ df_copy['xxx'] = df_copy['Tên trang thiết bị'].str[:9]
 # create a column contains string
 
 df_copy['Nhà ga'] = numpy.where(df_copy['xxx'].str.contains('-T1'), 'T1', 'T2')
+# create a column if the column 'xxx' = '-T1' -> T1, if different --> T2
 
-df_copy.drop_duplicates(subset=['Thời gian dự kiến','Nhà ga'], keep='first', inplace=True)
+df_copy = df_copy[~df_copy['Hệ thống/Trang thiết bị'].str.contains(':')]
+# remove the rows contains specific character
+
+df_copy = df_copy[~df_copy['Hệ thống/Trang thiết bị'].isin(['CUTE','SCN','FIDS'])]
+# remove the rows equals multi specific values
+
+df_copy.to_excel('dataframe_check.xlsx',index=False)
+
+# df_copy.drop_duplicates(subset=['Thời gian dự kiến','Nhà ga'], keep='first', inplace=True)
 # remove the rows with same value in 'subset' column, only keep the first row
 
 
@@ -86,6 +95,7 @@ template_wb = openpyxl.load_workbook(file_template_path)
 originalsheet = template_wb['Original Sheet']
 
 for i in set(df_copy['Thời gian dự kiến']):
+    print(i)
     for j in set(df_copy['Nhà ga']):
         check_boolean = (df_copy['Thời gian dự kiến'] == i) & (df_copy['Nhà ga'] == j)
         result1 = list(df_copy.loc[check_boolean,'Tên trang thiết bị'])
@@ -116,11 +126,15 @@ for i in set(df_copy['Thời gian dự kiến']):
                                 duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM LÀM THỦ TỤC HÀNH KHÁCH T2")
                             if "FIDS" in str(row[col_index]):
                                 duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM VÀ MÀN HÌNH FIDS T2")
+                            if "PHIẾU BẢO DƯỠNG BUỒNG ĐIỆN EDS" in str(row[col_index]):
+                                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG BUỒNG ĐIỆN EDS T2")
                         else:
                             if "LÀM THỦ TỤC HÀNH KHÁCH" in str(row[col_index]):
                                 duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM LÀM THỦ TỤC HÀNH KHÁCH T1")
                             if "FIDS" in str(row[col_index]):
                                 duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG MÁY TRẠM VÀ MÀN HÌNH FIDS T1")
+                            if "PHIẾU BẢO DƯỠNG BUỒNG ĐIỆN EDS" in str(row[col_index]):
+                                duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG BUỒNG ĐIỆN EDS T1")
                     if 'Ngày thực hiện' in str(row[col_index]):
                         duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày thực hiện: "+str(i))
                     if 'Ngày kiểm tra' in str(row[col_index]):
