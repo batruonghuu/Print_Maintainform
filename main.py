@@ -94,10 +94,13 @@ def insert_new_row(brow,sheet,value1,value2):
 template_wb = openpyxl.load_workbook(file_template_path)
 originalsheet = template_wb['Original Sheet']
 
-for i in set(df_copy['Thời gian dự kiến']):
+for i in set(df_copy['Hệ thống/Trang thiết bị']):
     print(i)
+    loc_x = df_copy.loc[df_copy['Hệ thống/Trang thiết bị'] == i]
+    l = loc_x['Thời gian dự kiến'].tolist()
+    k = l[0]
     for j in set(df_copy['Nhà ga']):
-        check_boolean = (df_copy['Thời gian dự kiến'] == i) & (df_copy['Nhà ga'] == j)
+        check_boolean = (df_copy['Thời gian dự kiến'] == k) & (df_copy['Nhà ga'] == j) & (df_copy['Hệ thống/Trang thiết bị'] == i)
         result1 = list(df_copy.loc[check_boolean,'Tên trang thiết bị'])
         result2 = list(df_copy.loc[check_boolean, 'Mã trang thiết bị new'])
         result3 = list(df_copy.loc[check_boolean, 'name1'])
@@ -136,9 +139,9 @@ for i in set(df_copy['Thời gian dự kiến']):
                             if "PHIẾU BẢO DƯỠNG BUỒNG ĐIỆN EDS" in str(row[col_index]):
                                 duplicate_ws.cell(row=row_index+1, column=col_index+1, value="PHIẾU BẢO DƯỠNG BUỒNG ĐIỆN EDS T1")
                     if 'Ngày thực hiện' in str(row[col_index]):
-                        duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày thực hiện: "+str(i))
+                        duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày thực hiện: "+str(k))
                     if 'Ngày kiểm tra' in str(row[col_index]):
-                        duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày kiểm tra: "+str(i))
+                        duplicate_ws.cell(row=row_index+1, column=col_index+1, value="Ngày kiểm tra: "+str(k))
                     if 'T1 - CẢNG HÀNG KHÔNG QUỐC TẾ NỘI BÀI' in str(row[col_index]):
                         if 'T2' in j:
                             duplicate_ws.cell(row=row_index+1, column=col_index+1, value="NHÀ GA HÀNH KHÁCH T2 - CẢNG HÀNG KHÔNG QUỐC TẾ NỘI BÀI")
@@ -146,7 +149,7 @@ for i in set(df_copy['Thời gian dự kiến']):
                 row_index = row_index +1
 
 template_wb.save('fileprint.xlsx')
-
+print(len(template_wb.sheetnames))
 
 
 
